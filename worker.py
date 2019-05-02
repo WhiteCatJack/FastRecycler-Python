@@ -1,10 +1,12 @@
 # coding=utf-8
+import math
 import pandas as pd
 
 from analyzer import Data
 from bmob import *
 from bmob_beans import *
 from database import query_data
+import matplotlib.pyplot as plt
 
 bmob = Bmob("cc9b6713ae4044193269990fede0c4f3", "1728823c0ecc355d0898ea9e836b03ce")
 
@@ -22,7 +24,7 @@ class Utils:
         return time.mktime((year, month, day, hour, minute, second, 0, 0, 0))
 
 
-class GarbageRecordManager:
+class GarbageCanRepository:
     def __init__(self, garbage_can):
         self.garbage_can = garbage_can
         self.time_list, self.volume_list = self.__get_garbage_record_list_local__()
@@ -58,13 +60,13 @@ class GarbageRecordManager:
         return data_frame['volume'].astype(float)
 
 
-class GarbageCanManager:
+class RecyclerPlaceRepository:
     def __init__(self, recycler_place):
         self.recycler_place = recycler_place
         self.garbage_can_list = self.__get_garbage_can_list__()
-        self.garbage_record_manager_list = []
+        self.garbage_can_repository_list = []
         for garbage_can in self.garbage_can_list:
-            self.garbage_record_manager_list.append(GarbageRecordManager(garbage_can))
+            self.garbage_can_repository_list.append(GarbageCanRepository(garbage_can))
 
     def __get_garbage_can_list__(self):
         print('Getting all garbage cans in RecyclerPlace[%s], areaCode=[%s], blockCode=[%s]...' %
@@ -75,6 +77,7 @@ class GarbageCanManager:
                                           BmobQuerier()
                                           .addWhereEqualTo('areaCode', self.recycler_place.area_code)
                                           .addWhereEqualTo('blockCode', self.recycler_place.block_code)
+                                          .addWhereEqualTo('objectId', '7946f9d5ad')
                                           ).jsonData.get(u'results')
         for garbage_can_item_json in garbage_can_item_list:
             garbage_can_item = GarbageCan(garbage_can_item_json)
@@ -82,13 +85,13 @@ class GarbageCanManager:
         return garbage_can_list
 
 
-class RecyclerPlaceManager:
+class UserRepository:
     def __init__(self, user_id):
         self.user_id = user_id
         self.recycler_place_list = self.__get_recycler_place__()
-        self.garbage_can_manager_list = []
+        self.recycler_place_repository_list = []
         for recycler_place in self.recycler_place_list:
-            self.garbage_can_manager_list.append(GarbageCanManager(recycler_place))
+            self.recycler_place_repository_list.append(RecyclerPlaceRepository(recycler_place))
 
     def __get_recycler_place__(self):
         print('Getting user[%s]\'s all recycler place...' % self.user_id)
@@ -122,7 +125,7 @@ class Worker:
         manager = self.manager_dic.get(user_id)
         if manager is not None:
             return manager
-        manager = RecyclerPlaceManager(user_id)
+        manager = UserRepository(user_id)
         self.manager_dic[user_id] = manager
         return manager
 
@@ -131,6 +134,11 @@ if __name__ == '__main__':
     user_id = 'Rnz0GGGL'
 
     worker = Worker()
-    manager = worker.__get_data_manager__(user_id).garbage_can_manager_list[0].garbage_record_manager_list[0]
+    manager = worker.__get_data_manager__(user_id).recycler_place_repository_list[0].garbage_can_repository_list[0]
     data = Data(manager)
-    data.show_graph()
+    data.predict()
+    # predict_time_series = data.predict_time_series
+    # predict_time_series.plot()
+    # plt.show()
+    data.shift()
+
