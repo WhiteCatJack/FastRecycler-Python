@@ -1,3 +1,5 @@
+import datetime
+
 ID_LIST = [
     '2f018a22cd', '88a57f17a4', '146dfb2f04', 'd9f718bd5b', 'ff0c7d69a8', 'fa1c5b819b',
     '7946f9d5ad', '025dde8c81', '0c70e8ab2c', '58ed092e18', 'cc997b8e96', '17d56d79f7',
@@ -35,5 +37,10 @@ DATA_AMOUNT_ONE_DAY = 1440 / DEFAULT_DATA_TIME_PERIOD_IN_MINUTE
 PRECISION = '0.000000'
 MAX_VOLUME = 40000
 
-TIME_START = [2019, 1, 1, 0, 0]
-TIME_END = [2019, 5, 2, 0, 0]
+RECYCLE_THRESHOLD = 0.9
+
+__now_date = datetime.datetime.now().date()
+__period_in_days = 60
+__start_date = __now_date - datetime.timedelta(days=__period_in_days)
+TIME_START = [__start_date.year, __start_date.month, __start_date.day, 0, 0]
+TIME_END = [__now_date.year, __now_date.month, __now_date.day + 1, 0, 0]

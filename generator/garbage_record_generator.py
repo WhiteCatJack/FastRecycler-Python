@@ -1,4 +1,3 @@
-import datetime
 from decimal import Decimal
 
 import pandas as pd
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from bmob import *
 from const import *
+from generator import database
 
 b = Bmob("cc9b6713ae4044193269990fede0c4f3", "1728823c0ecc355d0898ea9e836b03ce")
 
@@ -164,8 +164,7 @@ class Manager:
     def __init__(self):
         self.generator_list = []
         right = len(ID_LIST)
-        # for garbage_can_number in range(1, right + 1):
-        for garbage_can_number in range(7, 8):
+        for garbage_can_number in range(1, right + 1):
             generator = SingleGarbageCanRecordGenerator(garbage_can_number)
             generator.work()
             self.generator_list.append(generator)
@@ -192,3 +191,4 @@ class Manager:
 if __name__ == '__main__':
     manager = Manager()
     manager.work()
+    database.reconstruct_db()

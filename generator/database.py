@@ -48,9 +48,5 @@ def reconstruct_db():
         ")"
     )
 
-    df = pd.DataFrame(pd.read_csv('generator/Data.csv'))
+    df = pd.DataFrame(pd.read_csv('Data.csv'))
     update_db(df)
-
-
-if __name__ == '__main__':
-    reconstruct_db()

@@ -1,12 +1,10 @@
 # coding=utf-8
-import math
 import pandas as pd
 
-from analyzer import Data
+from analyzer import Analyzer
 from bmob import *
 from bmob_beans import *
-from database import query_data
-import matplotlib.pyplot as plt
+from generator.database import query_data
 
 bmob = Bmob("cc9b6713ae4044193269990fede0c4f3", "1728823c0ecc355d0898ea9e836b03ce")
 
@@ -77,7 +75,6 @@ class RecyclerPlaceRepository:
                                           BmobQuerier()
                                           .addWhereEqualTo('areaCode', self.recycler_place.area_code)
                                           .addWhereEqualTo('blockCode', self.recycler_place.block_code)
-                                          .addWhereEqualTo('objectId', '7946f9d5ad')
                                           ).jsonData.get(u'results')
         for garbage_can_item_json in garbage_can_item_list:
             garbage_can_item = GarbageCan(garbage_can_item_json)
@@ -134,11 +131,15 @@ if __name__ == '__main__':
     user_id = 'Rnz0GGGL'
 
     worker = Worker()
-    manager = worker.__get_data_manager__(user_id).recycler_place_repository_list[0].garbage_can_repository_list[0]
-    data = Data(manager)
-    data.predict()
-    # predict_time_series = data.predict_time_series
-    # predict_time_series.plot()
-    # plt.show()
-    data.shift()
+    result_dic = {}
+    for recycler_place_repository in worker.__get_data_manager__(user_id).recycler_place_repository_list:
+        for garbage_can_repository in recycler_place_repository.garbage_can_repository_list:
+            manager = garbage_can_repository
+
+            print("Working on garbage can [%s].." % manager.garbage_can.object_id)
+            data = Analyzer(manager, show_plot=False)
+            data.predict()
+            result_dic[manager.garbage_can.object_id] = data.predict_recycle_time_list
+            print("Done garbage can [%s]!" % manager.garbage_can.object_id)
+    print(result_dic)
 
