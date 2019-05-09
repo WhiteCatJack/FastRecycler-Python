@@ -4,7 +4,7 @@ import pandas as pd
 from analyzer import Analyzer
 from bmob import *
 from bmob_beans import *
-from generator.database import query_data
+from database import query_data
 
 bmob = Bmob("cc9b6713ae4044193269990fede0c4f3", "1728823c0ecc355d0898ea9e836b03ce")
 
@@ -136,10 +136,20 @@ if __name__ == '__main__':
         for garbage_can_repository in recycler_place_repository.garbage_can_repository_list:
             manager = garbage_can_repository
 
+            if manager.garbage_can.object_id in ['8451eb1f52', '1e5cdfca36', '76215b063c', '9989db9f62']:
+                continue
+
             print("Working on garbage can [%s].." % manager.garbage_can.object_id)
             data = Analyzer(manager, show_plot=False)
             data.predict()
             result_dic[manager.garbage_can.object_id] = data.predict_recycle_time_list
             print("Done garbage can [%s]!" % manager.garbage_can.object_id)
-    print(result_dic)
-
+        print(result_dic)
+    for garbage_can_id in result_dic.keys():
+        recycle_time_list = result_dic[garbage_can_id]
+        for recycle_datetime in recycle_time_list:
+            httpRequest = bmob.insert('RecycleInstruction', {
+                'targetUser': BmobPointer('_User', user_id),
+                'garbageCan': BmobPointer('GarbageCan', garbage_can_id),
+                'startTime': BmobDate(recycle_datetime)
+            })

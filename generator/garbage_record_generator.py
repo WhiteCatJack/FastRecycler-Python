@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 from bmob import *
 from const import *
-from generator import database
 
 b = Bmob("cc9b6713ae4044193269990fede0c4f3", "1728823c0ecc355d0898ea9e836b03ce")
 
@@ -173,7 +172,7 @@ class Manager:
     def create_csv(time_list, volume_list, id_list):
         data = {'time': time_list, 'volume': volume_list, 'garbageCan': id_list}
         df = pd.DataFrame(data)
-        df.to_csv(r'./Data.csv', columns=['time', 'volume', 'garbageCan'], index=False, sep=',')
+        df.to_csv(r'../Data.csv', columns=['time', 'volume', 'garbageCan'], index=False, sep=',')
 
     def work(self):
         time_list = []
@@ -191,4 +190,3 @@ class Manager:
 if __name__ == '__main__':
     manager = Manager()
     manager.work()
-    database.reconstruct_db()

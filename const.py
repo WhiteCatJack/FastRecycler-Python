@@ -43,4 +43,4 @@ __now_date = datetime.datetime.now().date()
 __period_in_days = 60
 __start_date = __now_date - datetime.timedelta(days=__period_in_days)
 TIME_START = [__start_date.year, __start_date.month, __start_date.day, 0, 0]
-TIME_END = [__now_date.year, __now_date.month, __now_date.day + 1, 0, 0]
+TIME_END = [__now_date.year, __now_date.month, __now_date.day, 0, 0]

@@ -31,11 +31,9 @@ class BmobFile(BmobObject):
 
 
 class BmobDate(BmobObject):
-    def __init__(self, timestamp):
+    def __init__(self, datetime):
         BmobObject.__init__(self, "Date")
-        if type(timestamp) == float or type(timestamp) == int:
-            timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp / 1000))
-        self.__dict__["iso"] = timestamp
+        self.__dict__["iso"] = datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 
 class BmobGeoPoint(BmobObject):

@@ -1,8 +1,6 @@
 import sqlite3
 import pandas as pd
 
-database = sqlite3.connect("database.db")
-
 DATA_BASE_NAME = 'database.db'
 
 
@@ -35,6 +33,7 @@ def query_data(garbage_can_id):
 
 
 def reconstruct_db():
+    database = sqlite3.connect(DATA_BASE_NAME)
     cursor = database.cursor()
     cursor.execute(
         "DROP TABLE IF EXISTS GarbageRecord "
@@ -50,3 +49,7 @@ def reconstruct_db():
 
     df = pd.DataFrame(pd.read_csv('Data.csv'))
     update_db(df)
+
+
+if __name__ == '__main__':
+    reconstruct_db()
